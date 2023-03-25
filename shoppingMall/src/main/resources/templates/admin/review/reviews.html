@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" style="height: 100%">
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="" />
+  <meta name="author" content="" />
+  <title>Shoes Story</title>
+  <!-- Favicon-->
+  <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+  <!-- Bootstrap icons-->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+  <!-- Core theme CSS (includes Bootstrap)-->
+  <link href="../css/styles.css" rel="stylesheet" />
+  <script th:if="${param.status}">alert("상품 등록이 완료되었습니다.")</script>
+</head>
+<style>
+  .main {
+      font-size: small;
+  }
+  .main {
+      height: auto;
+      min-height: 100%;
+      display: flex;
+      background-color: #DCDCDC;
+      margin: auto;
+      margin-bottom: 6%;
+      width: 90%;
+      flex-direction: column;
+  }
+  .inside {
+      display:flex;
+      justify-content: space-between;
+      padding: 2%;
+      background-color: white;
+      margin: 2%;
+      align-items: center
+  }
+
+  div > ul > li > ul > li > a[href]:active {
+      background-color: black;
+  }
+  .clickList > li > a[href]:active {
+      background-color: black;
+  }
+  .itemInfo {
+      margin-right: 20px;
+  }
+  .location {
+      position: sticky;
+      top: 0px;
+      z-index: 100;
+  }
+</style>
+<body style="height: 70%; margin-bottom: 3%; font-family: 'Noto Sans KR', sans-serif;">
+<nav class="location navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container px-4 px-lg-5">
+    <a th:text="#{page.title}" class="navbar-brand" href="/admin">슈즈 스토리</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+        <li class="nav-item"><a class="nav-link active" aria-current="page" href="/admin" th:text="#{page.home}">홈</a></li>
+        <li class="nav-item"><a class="nav-link active" href="#!" th:onclick="|location.href='@{/itemList}'|">상품목록</a></li>
+        <li id="no" class="nav-item dropdown" >
+          <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><strong>카테고리</strong></a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="/items?q=운동화" th:text="#{sneakers.search}">운동화</a></li>
+            <li><hr class="dropdown-divider" /></li>
+            <li><a class="dropdown-item" href="/items?q=구두" th:text="#{highShoes.search}">구두</a></li>
+            <li><hr class="dropdown-divider" /></li>
+            <li><a class="dropdown-item" href="/items?q=슬리퍼" th:text="#{slipper.search}">슬리퍼</a></li>
+            <li><hr class="dropdown-divider" /></li>
+            <li><a class="dropdown-item" href="/items?q=부츠" th:text="#{boots.search}">부츠</a></li>
+          </ul>
+        </li>
+        <form class="m-auto" action="/items" method="get">
+          <input style="border-radius: 5px" type="search" autofocus placeholder="검색어를 입력하세요" name="q">
+        </form>
+      </ul>
+    </div>
+    <li style="list-style: none;" class="nav-item dropdown">
+      <a th:text="#{adminPage.button}"style= "color: var(--bs-body-color)" id="dropDown" class="nav-link dropdown-toggle"  data-bs-toggle="dropdown" aria-expanded="false" role="button"><b>관리자페이지</b></a>
+      <ul class="dropdown-menu clickList" aria-labelledby="dropDown">
+        <li><a class="dropdown-item" href="/admin/items" th:text="#{allItem.info}">전체 상품 정보</a></li>
+        <hr class="dropdown-divider" />
+        <li><a class="dropdown-item" href="/admin/users" th:text="#{allUser.info}">전체 회원 정보</a></li>
+        <hr class="dropdown-divider" />
+        <li><a class="dropdown-item" href="/admin/orders" th:text="#{allUser.order}">전체 주문 정보</a></li>
+        <hr class="dropdown-divider" />
+        <li><a class="dropdown-item" href="/admin/reviews" th:text="#{allReview.info}">전체 리뷰 정보</a></li>
+      </ul>
+    </li>
+    <a th:text="#{logOut.button}"style= "color: var(--bs-body-color)" class="nav-link active" href="#!"  aria-current="page" th:onclick="|location.href='@{/logout}'|"><b>로그아웃</b></a>
+  </div>
+</nav>
+<h2 style="text-align: center; margin-top: 3%;">전체 리뷰 정보</h2>
+<div style="display: flex; justify-content: end; margin-left: 5%; width: 90%;">
+  <li style="list-style: none;" class="nav-item dropdown">
+    <a style= "color: var(--bs-body-color)" id="dropBar" class="nav-link dropdown-toggle"  data-bs-toggle="dropdown" aria-expanded="false" role="button"><b>정렬</b></a>
+    <ul class="dropdown-menu clickList" aria-labelledby="dropDown">
+      <li><a class="dropdown-item" href="/admin/reviews?sort=id">이름순(내림차순)</a></li>
+      <hr class="dropdown-divider" />
+      <li><a class="dropdown-item" href="/admin/reviews?sort=ii">이름순(오름차순)</a></li>
+      <hr class="dropdown-divider" />
+      <li><a class="dropdown-item" href="/admin/reviews?sort=gd">높은 평점순</a></li>
+      <hr class="dropdown-divider" />
+      <li><a class="dropdown-item" href="/admin/reviews?sort=gi">낮은 평점순</a></li>
+    </ul>
+  </li>
+</div>
+<div class="main">
+  <div th:each="review: ${reviews}">
+    <form method="post" th:action="@{/items/review/delete?reviewId={reviewId}(reviewId = ${review.id})}" class="inside" th:object="${review}">
+      <div class="itemInfo">
+        <div>작성자 이름: <span th:text="*{userName}"></span></div>
+      </div>
+      <div class="itemInfo">
+        <div>작성자 닉네임: <span th:text="*{nickName}"></span></div>
+      </div>
+      <div class="itemInfo">
+        <div>상품: <span th:text="*{item.itemName}"></span></div>
+      </div>
+      <div class="itemInfo">
+        <div>평점: <span th:text="*{grade}"></span></div>
+      </div>
+      <div class="itemInfo">
+        <div>내용: <span th:text="*{text}"></span></div>
+      </div>
+      <div class="itemInfo">
+        <div>생성 일자: <span th:text="*{createdDate}"></span></div>
+      </div>
+      <div class="itemInfo">
+        <div>수정 일자: <span th:text="*{lastModifiedDate}"></span></div>
+      </div>
+      <div>
+        <button style="font-size: small;" class="btn btn-outline-dark bg-dark text-white" onclick="return cancel()" type="submit">리뷰 삭제</button>
+      </div>
+    </form>
+  </div>
+</div>
+<footer class="py-5 bg-dark" style="position: relative;">
+  <div class="container"><p class="m-0 text-center text-white">Copyright &copy; Shoes Story</p></div>
+</footer>
+<!-- Bootstrap core JS-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Core theme JS-->
+<script src="../js/scripts.js"></script>
+<script src="http://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script>
+  function cancel() {
+      var cancel = confirm("정말로 리뷰를 삭제하시겠습니까?");
+      if (cancel === true) {
+          alert("주문이 삭제되었습니다.");
+          return true;
+      }
+      else {
+          return false;
+      }
+}
+</script>
+</body>
+</html>

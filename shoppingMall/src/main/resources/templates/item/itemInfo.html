@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="" />
+  <meta name="author" content="" />
+  <title>Shoes Story</title>
+  <!-- Favicon-->
+  <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+  <!-- Bootstrap icons-->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+  <!-- Core theme CSS (includes Bootstrap)-->
+  <link href="../css/styles.css" rel="stylesheet" />
+  <style>
+        #main {
+          height: 100%;
+          min-height: 100%;
+          }
+        .itemSelect {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 2vh;
+          width = 100%;
+          height: 7vh;
+          background-color: #DCDC;
+          margin-bottom: 1vh;
+        }
+        #totalPrice {
+            text-align: right;
+        }
+        div > ul > li > ul > li > a[href]:active {
+            background-color: black;
+        }
+        .clickList > li > a[href]:active {
+            background-color: black;
+        }
+        .location {
+            position: sticky;
+            top: 0px;
+            z-index: 100;
+        }
+        .show {
+            background: white;
+            border: none;
+        }
+  </style>
+  <script th:if="${param.status}">alert("리뷰 저장이 완료되었습니다.")</script>
+</head>
+<body style="background-color: #DCDCDC; font-family: 'Noto Sans KR', sans-serif;">
+<nav class="location navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container px-4 px-lg-5">
+    <a th:text="#{page.title}" class="navbar-brand" href="/" th:if="${adminUser} == null">슈즈 스토리</a>
+    <a th:text="#{page.title}" class="navbar-brand" href="/admin" th:unless="${adminUser} == null">의류 쇼핑몰</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+        <li class="nav-item"><a class="nav-link active" aria-current="page" href="/" th:text="#{page.home}">홈</a></li>
+        <li class="nav-item"><a class="nav-link active" href="#!" th:onclick="|location.href='@{/itemList}'|">상품목록</a></li>
+        <li id="no" class="nav-item dropdown" >
+          <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><strong>카테고리</strong></a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="/items?q=운동화" th:text="#{sneakers.search}">운동화</a></li>
+            <li><hr class="dropdown-divider" /></li>
+            <li><a class="dropdown-item" href="/items?q=구두" th:text="#{highShoes.search}">구두</a></li>
+            <li><hr class="dropdown-divider" /></li>
+            <li><a class="dropdown-item" href="/items?q=슬리퍼" th:text="#{slipper.search}">슬리퍼</a></li>
+            <li><hr class="dropdown-divider" /></li>
+            <li><a class="dropdown-item" href="/items?q=부츠" th:text="#{boots.search}">부츠</a></li>
+          </ul>
+        </li>
+        <form class="m-auto" action="/items" method="get">
+          <input style="border-radius: 5px" type="search" autofocus placeholder="검색어를 입력하세요" name="q">
+        </form>
+      </ul>
+    </div>
+    <a th:text="#{login.button}"style= "color: var(--bs-body-color); border" class="nav-link active" aria-current="page" href="#!" th:onclick="|location.href='@{/login}'|" th:if="${loginUser} == null and ${adminUser} == null"><b>로그인</b></a>
+    <li style="list-style: none;" class="nav-item dropdown">
+      <a th:text="#{myPage.button}"style= "color: var(--bs-body-color)" id="dropDown" class="nav-link dropdown-toggle"  data-bs-toggle="dropdown" aria-expanded="false" role="button" th:if="${loginUser} != null and ${adminUser} == null"><b>마이페이지</b></a>
+      <ul class="dropdown-menu clickList" aria-labelledby="dropDown">
+        <li><a class="dropdown-item" href="/userInfo" th:text="#{user.info}">회원 정보</a></li>
+        <li><hr class="dropdown-divider" /></li>
+        <li><a class="dropdown-item" href="/cart" th:text="#{user.cart}">장바구니</a></li>
+        <li><hr class="dropdown-divider" /></li>
+        <li><a class="dropdown-item" href="/orderPage" th:text="#{user.order}">주문 정보</a></li>
+        <li><hr class="dropdown-divider" /></li>
+        <li><a class="dropdown-item" href="/orderInfo" th:text="#{user.delivery}">배송 정보</a></li>
+      </ul>
+    </li>
+    <li style="list-style: none;" class="nav-item dropdown">
+      <a th:text="#{adminPage.button}"style= "color: var(--bs-body-color)" id="drop" class="nav-link dropdown-toggle"  data-bs-toggle="dropdown" aria-expanded="false" role="button" th:if="${adminUser} != null"><b>관리자페이지</b></a>
+      <ul class="dropdown-menu clickList" aria-labelledby="dropDown">
+        <li><a class="dropdown-item" href="/admin/items" th:text="#{allItem.info}">전체 상품 정보</a></li>
+        <hr class="dropdown-divider" />
+        <li><a class="dropdown-item" href="/admin/users" th:text="#{allUser.info}">전체 회원 정보</a></li>
+        <hr class="dropdown-divider" />
+        <li><a class="dropdown-item" href="/admin/orders" th:text="#{allUser.order}">전체 주문 정보</a></li>
+        <hr class="dropdown-divider" />
+        <li><a class="dropdown-item" href="/admin/reviews" th:text="#{allReview.info}">전체 리뷰 정보</a></li>
+      </ul>
+    </li>
+    <a th:text="#{signUp.button}"style= "color: var(--bs-body-color)" href="#!" class="nav-link active" aria-current="page" th:onclick="|location.href='@{/addUser}'|" th:if="${loginUser} == null and ${adminUser} == null"><b>회원가입</b></a>
+    <a th:text="#{logOut.button}"style= "color: var(--bs-body-color)" class="nav-link active" href="#!" aria-current="page" th:onclick="|location.href='@{/logout}'|" th:if="${loginUser} != null or ${adminUser} != null"><b>로그아웃</b></a>
+  </div>
+  <form class="d-flex" action="/cart" th:if="${adminUser} == null">
+    <button class="btn btn-outline-dark" type="submit" onclick="|location.href='@{/cart}'|">
+      <i class="bi-cart-fill me-1"></i>
+      장바구니
+    </button>
+  </form>
+</nav>
+<div style="display: flex;" id="main">
+  <input type="hidden" class="loginUser" th:value="${loginUser}" th:name="${loginUser}">
+  <div style="display: flex; justify-content: center; flex-flow: row nowrap; margin: auto; margin-top: 5%; background-color: white; width:90%;">
+    <div class="col-6" style="height: 70%; padding: 5%" ><img th:src="'../' + ${item.filePath}" width="100%" height="100%"></div>
+    <div class="col-6" style="padding: 5%">
+      <div style="margin-left: 50px"><h4>상품 이름: <span id="itemName" th:text="${item.itemName}"></span></h4></div>
+      <hr>
+      <div style="margin-left: 50px"><h5>상품 정보: <span th:text="${item.itemDetail}"></span></h5></div>
+      <hr>
+      <div style="margin-left: 50px"><h5>평균 평점: <span class="averageStar" th:value="${reviewAverage}"></span></h5></div>
+      <hr>
+      <div style="margin-left: 50px"><h5>판매가: <span id="price" th:text = "${item.price}"></span><span>원</span></h5></div>
+      <hr>
+      <label for="selection" style="margin-left: 50px; margin:right: 20px">사이즈 선택: </label>
+      <select id="selection">
+        <option value="null">사이즈 선택</option>
+        <option th:each="itemInfo : ${items}" th:text="${itemInfo.itemInfoId.size}"></option>
+      </select>
+      <hr>
+      <div id="itemShow">
+      </div>
+      <div><h3 id="totalPrice"></h3></div>
+      <div style="display: inline-block; width: 100%;">
+      <hr class="line" style="display: none;">
+        <button style="color: white; background-color: black; border-color: black; float: left; display: none;" class="btn" onclick="cart()">장바구니에 담기</button>
+        <button style="color: white; background-color: black; border-color: black; float: right; display: none;" class="btn" onclick="order()">구매하기</button>
+    </div>
+    </div>
+  </div>
+</div>
+<div  th:if="${!#lists.isEmpty(reviews)}" style="margin-left: 5%; margin-right: 5%; background-color: white;">
+  <li style="list-style: none; margin-left: 4%;" class="nav-item dropdown">
+    <a style= "color: var(--bs-body-color); width: 10%;" id="dropBar" class="nav-link dropdown-toggle"  data-bs-toggle="dropdown" aria-expanded="false" role="button"><b>정렬</b></a>
+    <ul class="dropdown-menu clickList" aria-labelledby="dropDown">
+      <li><a class="dropdown-item" th:href="@{/items/{id}(id=${item.id})} + @{?sort=gradeD}">높은 평점순</a></li>
+      <hr class="dropdown-divider" />
+      <li><a class="dropdown-item" th:href="@{/items/{id}(id=${item.id})} + @{?sort=gradeI}">낮은 평점순</a></li>
+      <hr class="dropdown-divider" />
+      <li><a class="dropdown-item" th:href="@{/items/{id}(id=${item.id})} + @{?sort=newD}">최신순</a></li>
+      <hr class="dropdown-divider" />
+      <li><a class="dropdown-item" th:href="@{/items/{id}(id=${item.id})} + @{?sort=newI}">오래된순</a></li>
+    </ul>
+  </li>
+</div>
+<div style="display: grid; margin-right: 5%; margin-left: 5%; background-color: white;">
+  <div class="allReview" style="display: flex; justify-content: space-between; margin-left: 5%; margin-bottom: 1%;">
+  <h3 th:if="${!#lists.isEmpty(reviews)}">전체 리뷰: <span th:text="${reviewCount}"></span><span>개</span></h3>
+  <button style="font-size: small; margin-right: 5%; width: 82.18px; height: 33.1px;" class="btn btn-outline-dark bg-dark text-white" type="button" th:if="${orderItem} == ${item.id} and ${ifWritten} == false and ${!#lists.isEmpty(reviews)}" onclick="createReview()">리뷰 추가</button>
+  <button style="font-size: small; margin-bottom: 2%; margin-left: 88.5%; width: 82.18px; height: 33.1px;" class="btn btn-outline-dark bg-dark text-white" type="button" th:if="${orderItem} == ${item.id} and ${ifWritten} == false and ${#lists.isEmpty(reviews)}" onclick="createReview()">리뷰 추가</button>
+  </div>
+  <div class="newReview" style="display: none">
+    <hr style="margin: 0;">
+    <form method="post" th:action style="padding-left:5%; margin-top: 2%; margin-bottom: 2%;">
+      <input class="review" type="hidden" th:name="id" th:value="0">
+      <div style="margin-bottom: 2%;">닉네임: <input th:value="${nickName}" disabled="disabled"> 평점(0 ~ 5): <input style="width: 135px" th:name="grade" required type="number" min="0" max="5">
+      </div>
+      <div>내용: <input th:name="text"  style="margin-left: 15px; width: 446px;" type="text" required>
+        <button style="font-size: small; float:right; margin-right: 5%;" class="btn btn-outline-dark bg-dark text-white edit" type="submit">리뷰 저장</button>
+      </div>
+    </form>
+  </div>
+  <div th:each="review: ${reviews}">
+    <hr style="margin: 0;">
+    <form method="post" th:action style="padding-left:5%; margin-top: 1%; margin-bottom: 2%;">
+      <p>작성 일자: <span th:text="${review.lastModifiedDate}" disabled="disabled"></span>
+        <span th:if="${review.lastModifiedDate} != ${review.createdDate}">(수정됨)</span>
+      </p>
+      <p>평점:
+        <span style="margin-bottom: 1%;" class="star" th:value="${review.grade}"></span>
+        </p>
+      <input class="review" type="hidden" th:name="id" th:value="${review.id}">
+      <div style="margin-bottom: 1%;">닉네임: <input th:value="${review.nickName}" disabled="disabled" class="show"> 평점(1 ~ 5): <input style="width: 135px" th:name="grade" class="show" th:classappend="${review.id}" th:value="${review.grade}" disabled="disabled" required type="number" min="1" max="5">
+        <button style="font-size: small; float:right; margin-right: 5%;" class="btn btn-outline-dark bg-dark text-white" type="button" th:if="${review.user.id} == ${loginUser} or ${adminUser} != null" th:onclick="deleteReview(this);" th:value="${review.id}">리뷰 삭제</button>
+      </div>
+      <div>내용: <input th:name="text" th:classappend="${review.id}" style="margin-left: 15px; width: 446px;" type="text" th:value="${review.text}"disabled="disabled" required class="show">
+        <button style="font-size: small; float:right; margin-right: 5%;" class="btn btn-outline-dark bg-dark text-white edit" onclick="modified(this)" type="button" th:if="${review.user.id} == ${loginUser}" th:value="${review.id}" th:id="${review.id}">리뷰 수정</button>
+        <button style="font-size: small; float:right; margin-right: 5%; display: none;" class="add btn btn-outline-dark bg-dark text-white edit" type="submit" th:if="${review.user.id} == ${loginUser}">리뷰 저장</button>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- Footer-->
+<footer class="py-5 bg-dark" style="position: relative; margin-top: 5%;">
+  <div class="container"><p class="m-0 text-center text-white">Copyright &copy; Shoes Story</p></div>
+</footer>
+<!-- Bootstrap core JS-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Core theme JS-->
+<script src="../js/scripts.js"></script>
+<script src="http://code.jquery.com/jquery-3.5.1.min.js">
+</script>
+<script>
+  window.onload = function(){
+      var averageStar = $(".averageStar").attr('value');
+      for (let j = 0; j < averageStar; j++) {
+          $('.averageStar').append('<span style="color: gold;" class="bi-star-fill"></span>');
+      }
+      for (let k = 0; k < 5 - averageStar; k++) {
+          $('.averageStar').append('<span style="color: gainsboro;" class="bi-star-fill"></span>');
+      }
+
+      var starList = document.querySelectorAll(".star");
+      var idList= [];
+      for (let i = 0; i< starList.length; i++) {
+           starList[i].setAttribute("id", 1000000 + i);
+           idList.push(1000000 + i);
+      }
+      var d = [];
+      $('.star').each(function(i) {
+          d[i] = $(this).attr('value');
+      });
+      for (let i = 0; i < d.length; i++) {
+          for (let j = 0; j < d[i]; j++) {
+              $('#' + idList[i]).append('<span style="color: gold;" class="bi-star-fill"></span>');
+          }
+          for (let k = 0; k < 5 - d[i]; k++) {
+              $('#' + idList[i]).append('<span style="color: gainsboro;" class="bi-star-fill"></span>');
+          }
+      }
+  }
+</script>
+<script>
+  function createReview() {
+      $(".newReview").css("display", "");
+  }
+</script>
+<script th:inline="javascript">
+  function deleteReview(b) {
+      var deleteReview = confirm("리뷰를 삭제하시겠습니까?");
+      var id = $(b).val();
+      if (deleteReview == true) {
+          alert("삭제가 완료되었습니다.");
+          location.replace("/items/review/delete?reviewId=" + id);
+          return true;
+      }
+      else {
+          return false;
+      }
+  }
+</script>
+<script>
+  function modified(a) {
+      var className = $(a).val();
+      $("." + className).attr("disabled", false);
+      $("#" + className).css("display", 'none');
+      $(".add").css("display", "");
+      $("." + className).css("border", 'solid 1px');
+  }
+</script>
+<script>
+   var sizeArray = [];
+   $("#selection").change(function() {
+      var size = $("#selection").val();
+      var price = $("#price").text();
+      if (size != 'null') {
+          var itemName = $("#itemName").text();
+          if (sizeArray.includes(size)) {
+              alert("이미 담긴 상품입니다.");
+          }
+          else {
+              sizeArray.push(size);
+              let div = "<div>" + price + "원" + "</div>"
+              $('<div>').attr('class', 'itemSelect').text(itemName + " " + size).append(div).appendTo('#itemShow');
+              $('<select style="margin-bottom: 3vh" class="optionMake" onclick = "optionMake(); this.onclick=null;" onchange="changePrice()"><option value="0">0개</option></select>').appendTo('#itemShow');
+          }
+      }
+  });
+    function cart() {
+      var name = $("#itemName").text();
+      var amount = document.querySelectorAll(".optionMake");
+      var amountArray = [];
+       for (let i = 0; i < amount.length; i ++) {
+              amountArray.push(Number(amount[i].value));
+       }
+       var list = {
+           "name" : name,
+           "amount": amountArray,
+           "size": sizeArray,
+       };
+       if ($(".loginUser").val() != ""){
+       alert("장바구니에 담겼습니다!");
+       $.ajax({
+           url: "/cart",
+           type: "POST",
+           data: list,
+           contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+           success: function(data) {
+               location.href= '../cart';
+           },
+           error: function() {
+           alert("에러");
+           }
+       });
+       }
+       else {
+           alert("로그인을 먼저 해주세요.");
+           $.ajax({
+           success: function() {
+               location.href="../login";
+           }
+       });
+  }
+  }
+function order() {
+      var name = $("#itemName").text();
+      var amount = document.querySelectorAll(".optionMake");
+      var amountArray = [];
+       for (let i = 0; i < amount.length; i ++) {
+              amountArray.push(Number(amount[i].value));
+       }
+       var list = {
+           "name" : name,
+           "amount": amountArray,
+           "size": sizeArray,
+       };
+       if ($(".loginUser").val() != ""){
+       alert("상품이 성공적으로 담겼습니다!");
+       $.ajax({
+           url: "/orderPage",
+           type: "POST",
+           data: list,
+           contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+           success: function(data) {
+               location.href= '../orderPage';
+           },
+           error: function() {
+           alert("에러");
+           }
+       });
+       }
+       else {
+           alert("로그인을 먼저 해주세요.");
+           $.ajax({
+           success: function() {
+               location.href="../login";
+           }
+       });
+  }
+  }
+</script>
+<script>
+  function optionMake() {
+      for (var i = 1; i < 100; i++) {
+          var a = $("<option value='" + i + "'>" + i + "개" + "</option>");
+          $(".optionMake").append(a);
+      }
+  }
+</script>
+<script>
+  function changePrice() {
+      var amount = document.querySelectorAll(".optionMake");
+      var priceOut = 0;
+          for (let i = 0; i < amount.length; i ++) {
+              priceOut += Number(amount[i].value * $("#price").text());
+          }
+          $("#totalPrice").html(":" + priceOut + "원");
+          $(".btn").css("display", "block");
+          $(".line").css("display", "block");
+  }
+</script>
+<script>
+</script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Shop Homepage - Start Bootstrap Template</title>
+    <!-- Favicon-->
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <!-- Bootstrap icons-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="../css/styles.css" rel="stylesheet" />
+    <style>
+        .fieldError {
+            color : red;
+        }
+    </style>
+</head>
+<body style="font-family: 'Noto Sans KR', sans-serif;">
+<div class="container">
+<form style="width: 80vw; margin: auto;" action="/find/id" th:object="${findUserDto}" method="post">
+    <h2 style="margin-top: 2rem;">아이디 찾기</h2>
+        <div class="form-group">
+            <label th:for="userLoginId">이름</label>
+            <input type="text" th:field="*{userName}" class="form-control">
+            <div class="fieldError" th:errors="*{userName}"></div>
+        </div>
+        <div class="form-group">
+            <label th:for="userEmail">이메일</label>
+            <input type="text" th:field="*{userEmail}" class="form-control mailInput"
+                   placeholder="이메일을 입력하세요" required>
+            <div class="fieldError" th:errors="*{userEmail}"></div>
+        </div>
+        <div th:if="${#fields.hasGlobalErrors()}">
+            <p class="fieldError" th:each="err : ${#fields.globalErrors()}" th:text="${err}">글로벌 오류 메시지</p>
+        </div>
+        <div>
+            <button style="color: white; background-color: black; border-color: black; margin-top: 1rem;" class="w-100 btn btn-lg" type="submit">제출하기</button>
+        </div>
+</form>
+</div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Core theme JS-->
+<script src="../js/scripts.js"></script>
+<script src="http://code.jquery.com/jquery-3.5.1.min.js"></script>
+</html>
